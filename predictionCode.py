@@ -9,6 +9,7 @@ from keras.models import load_model
 import cv2
 import numpy as np
 import os
+import time
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 videos = ['mp4', 'mov']
@@ -28,7 +29,7 @@ while(empty == True):
         print("Not empty")
         empty=False
 #once a video is received, the image/video is opened
-        
+time.sleep(1)    
 input_file = path_to_image + '/' + os.listdir(path_to_image)[0]
 print(input_file)
 string = input_file.split('.')
@@ -47,6 +48,7 @@ if (string[1] in videos):
         while frame_count < 75: #will need to play around with this value, currently set to 2.5 seconds at 30 fps
             ret, frame = cap.read()
             if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 frame = cv2.resize(frame, (50,50))
                 frame = np.reshape(frame, [1,50,50,1])
                 guess = (model.predict_classes(frame)[0]) #get guess value 0-25
@@ -69,3 +71,9 @@ else:
 labels = [int_to_char[x] for x in classes]
 
 print(labels)
+
+outputString = ''.join(str(e) for e in labels)
+
+with open("C:/QMIND_19_20/inputText/output.txt", "w") as textFile:
+    textFile.write(outputString)
+
