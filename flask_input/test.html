@@ -1,0 +1,280 @@
+<html lang="en">
+    <head> 
+        <meta charest="UTF-8">
+        <title> ASL Translator </title>
+        <link rel='stylesheet' type = "text/css" href="Style_QMIND.css">
+    </head>
+    <body>
+        <div id="banner">
+        <header> 
+            <h1> ASL Translator</h1>
+            <p> QMIND 2019-2020 Design Project</p>
+        </header>
+        </div>
+        
+        <div id="main">
+            <h2>Select a file to upload</h2>
+            <p>
+	           {% with messages = get_flashed_messages() %}
+	               {% if messages %}
+		              <ul class=flashes>
+		                  {% for message in messages %}
+		                      {{ message }}
+		                  {% endfor %}
+		                  </ul>
+	                   {% endif %}
+	               {% endwith %}
+            </p>
+            <form method="post" action="/" enctype="multipart/form-data">
+                <dl>
+		              <p>
+			             <input type="file" name="file" autocomplete="off" required>
+		              </p>
+                </dl>
+            <p>
+		      <input type="submit" value="Submit">
+	       </p>
+           </form>   
+        <main>
+        <div>
+        <p>
+            {% with input1 = get_flashed_messages() %}
+            <ul class=flashes>
+                {% for inP in input1 %}
+                    {{inP}}
+                {% endfor %}
+            </ul>
+            {% endwith %}
+        </p>  
+        </div> 
+        <button id = 'btnStart'> START RECORDING </button>
+        <button id = 'btnStop'> STOP RECORDING </button><br/>
+        <br>
+        
+            <video controls></video>
+            <video id= 'vid2' controls></video>
+        </main>
+        <script>
+          let constraintObj = { 
+            audio: false, 
+            video: { 
+                facingMode: "user", 
+                width: { min: 320, ideal: 640, max: 960 },
+                height: { min: 240, ideal: 360, max: 540 } 
+            } 
+        }; 
+        
+        if (navigator.mediaDevices === undefined) {
+            navigator.mediaDevices = {};
+            navigator.mediaDevices.getUserMedia = function(constraintObj) {
+                let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                if (!getUserMedia) {
+                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                }
+                return new Promise(function(resolve, reject) {
+                    getUserMedia.call(navigator, constraintObj, resolve, reject);
+                });
+            }
+        }else{
+            navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                devices.forEach(device=>{
+                    console.log(device.kind.toUpperCase(), device.label);
+                    //, device.deviceId
+                })
+            })
+            .catch(err=>{
+                console.log(err.name, err.message);
+            })
+        }
+
+        navigator.mediaDevices.getUserMedia(constraintObj)
+        .then(function(mediaStreamObj) {
+            //connect the media stream to the first video element
+            let video = document.querySelector('video');
+            if ("srcObject" in video) {
+                video.srcObject = mediaStreamObj;
+            } else {
+                //old version
+                video.src = window.URL.createObjectURL(mediaStreamObj);
+            }
+            
+            video.onloadedmetadata = function(ev) {
+                //show in the video element what is being captured by the webcam
+                video.play();
+            };
+            
+            //add listeners for saving video/audio
+            let start = document.getElementById('btnStart');
+            let stop = document.getElementById('btnStop');
+            let vidSave = document.getElementById('vid2');
+            let mediaRecorder = new MediaRecorder(mediaStreamObj);
+            let data = [];
+            
+            start.addEventListener('click', (ev)=>{
+                mediaRecorder.start();
+                console.log(mediaRecorder.state);
+            })
+            stop.addEventListener('click', (ev)=>{
+                mediaRecorder.stop();
+                console.log(mediaRecorder.state);
+            });
+            mediaRecorder.ondataavailable = function(ev) {
+                data.push(ev.data);
+            }
+            mediaRecorder.onstop = (ev)=>{
+                let blob = new Blob(data, { 'type' : 'video/mp4;' });
+                data = [];
+                let videoURL = window.URL.createObjectURL(blob);
+                vidSave.src = videoURL;
+                    console.log(videoURL);
+                    let a = document.createElement('a');
+                    a.href = videoURL;
+                    a.textContent = 'Download video';
+                    a.setAttribute('download', 'download');
+                    a.setAttribute('type', 'video/mp4');
+                    document.body.appendChild(a);
+            }
+        })
+        .catch(function(err) { 
+            console.log(err.name, err.message); 
+        });
+        
+    </script>
+        <a href='vid2.mp4' download><button class='button'>Submit</button></a>       
+        </div>
+        
+        
+        <div id="foot"> 
+        <footer> 
+            <p> ASL Design Team Members: Colin Cumming, Dennis Huynh, Nicolas Wills, Alexia Quinn, Griffin Clark and Sahil Grewal</p>
+            <p> Learn More about QMIND at our <a href="https://www.facebook.com/QuMIND/">Facebook Page</a>.</p>
+        </footer>
+        </div>
+            
+        <style> 
+            h1{ 
+                font-size: 40px; 
+                color:royalblue; 
+                text-align:; 
+                font-family: serif
+            }
+            p {
+                font-size: 20px; 
+                font-family: sans-serif; 
+                color: ; 
+                text-align:;
+            }
+            body{
+                
+                background-color:ghostwhite; 
+                color: black;
+                font-family: sans-serif;
+                
+            }
+            #banner {
+                background-color: lightblue;
+                
+            }
+            #foot {
+                background-color: lightblue;
+                text-transform: full-width
+            }
+            #main {
+                text-align: center
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            .button:hover {background-color: skyblue}
+
+            .button:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+            
+            #btnStart {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #btnStart:hover {background-color: skyblue}
+
+            #btnStart:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+            
+            #btnStop {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #btnStop:hover {background-color: skyblue}
+
+            #btnStop:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+            
+            #submit {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #submit:hover {background-color: skyblue}
+
+            #submit:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+        </style>
+        
+    </body>
+</html>

@@ -1,0 +1,241 @@
+<html lang="en">
+    <head> 
+        <meta charest="UTF-8">
+        <title> ASL Translator </title>
+        <link rel='stylesheet' type = "text/css" href="Style_QMIND.css">
+    </head>
+    <body>
+        <div id="banner">
+        <header> 
+            <h1> ASL Translator</h1>
+            <p> QMIND 2019-2020 Design Project</p>
+        </header>
+        </div>
+        
+        <div id="main">
+            <h2>Select a file to upload</h2>
+            <p>
+	           {% with messages = get_flashed_messages() %}
+	               {% if messages %}
+		              <ul class=flashes>
+		                  {% for message in messages %}
+		                      {{ message }}
+		                  {% endfor %}
+		                  </ul>
+	                   {% endif %}
+	               {% endwith %}
+            </p>
+            <form method="post" action="/" enctype="multipart/form-data">
+                <dl>
+		              <p>
+			             <input type="file" name="file" autocomplete="off" required>
+		              </p>
+                </dl>
+            <p>
+		      <input id="submit" type="submit" value="Submit">
+	       </p>
+           </form>   
+        <main>
+            <video id="player" controls autoplay></video>
+            <button id="capture">Capture</button>
+            <canvas id="canvas" width=640 height=480></canvas>
+            <script>
+                const player = document.getElementById('player');
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
+                const captureButton = document.getElementById('capture');
+
+            const constraints = {
+            video: true,
+            };
+            
+
+            captureButton.addEventListener('click', () => {
+            // Draw the video frame to the canvas.
+                    context.drawImage(player, 0, 0, canvas.width, canvas.height);
+            });
+
+            // Attach the video stream to the video element and autoplay.
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                player.srcObject = stream;
+                });
+
+            var link = document.createElement('a');
+                link.innerHTML = '<form name="myForm" method="post" action="/image">Download Image<input type="hidden" name="thisIsTheParameterName" value="testDataToBePosted"/></form>';
+                link.setAttribute("id", "downloader")
+                link.addEventListener('click', function(ev) {
+                document.forms["myForm"].submit();
+                link.href = canvas.toDataURL();
+                link.download = "input.jpg";
+            }, false);
+            document.body.appendChild(link);
+            </script>      
+        </div>
+        
+        
+        <div id="foot"> 
+        <footer> 
+            <p> ASL Design Team Members: Colin Cumming, Dennis Huynh, Nicolas Wills, Alexia Quinn, Griffin Clark and Sahil Grewal</p>
+            <p> Learn More about QMIND at our <a id="facebook" href="https://www.facebook.com/QuMIND/">Facebook Page</a>.</p>
+        </footer>
+        </div>
+            
+        <style> 
+            h1{ 
+                font-size: 40px; 
+                color:royalblue; 
+                text-align:; 
+                font-family: serif
+            }
+            p {
+                font-size: 20px; 
+                font-family: sans-serif; 
+                color: ; 
+                text-align:;
+            }
+            body{
+                
+                background-color:ghostwhite; 
+                color: black;
+                font-family: sans-serif;
+                
+            }
+
+            #banner {
+                background-color: lightblue;
+                
+            }
+            #foot {
+                background-color: lightblue;
+                text-transform: full-width
+            }
+            #main {
+                text-align: center
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            .button:hover {background-color: skyblue}
+
+            .button:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+            
+            #btnStart {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #btnStart:hover {background-color: skyblue}
+
+            #btnStart:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+            
+            #btnStop {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #btnStop:hover {background-color: skyblue}
+
+            #btnStop:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+            
+            #submit {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #capture {
+                display: inline-block;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999; 
+            }
+
+            #downloader{
+                display: block;
+                width:100px;
+                margin:15 auto;
+                font-size: 16px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                color: #fff;
+                background-color: lightsteelblue;
+                border: none;
+                border-radius: 9px;
+                box-shadow: 0 4px #999;
+            }
+
+            #submit:hover {background-color: skyblue}
+
+            #submit:active {
+                background-color: skyblue;
+                box-shadow: 0 2px #666;
+                transform: translateY(4px);
+            }
+        </style>
+        
+    </body>
+</html>
